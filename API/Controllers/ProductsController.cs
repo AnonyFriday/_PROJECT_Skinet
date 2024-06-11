@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Data;
+using API.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -6,18 +9,26 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ProductsController : Controller
     {
+        private readonly StoreContext _storeContext;
+
+        public ProductsController(StoreContext storeContext)
+        {
+            this._storeContext = storeContext;
+        }
 
         [HttpGet]
-        public string GetProducts()
+        public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            return "this will be a list of products";
+            var products = await _storeContext.Products.ToListAsync();
+            return products;
         }
 
 
         [HttpGet("{id}")]
-        public string GetProduct(int id)
+        public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            return "this will be a product";
+            // find an entity with the primary key
+            return await _storeContext.Products.FindAsync(id);
         }
     }
 }
